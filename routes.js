@@ -1,12 +1,11 @@
 const router=require('express').Router();
 const authMiddleware=require('./middleware/authMiddleware');
-const {addProduct, updateProduct, deleteProduct}=require('./controllers/userController');
-const {getProducts}=require('./controllers/userController');
+const {addCustomers, getCustomers, updateCustomer, deleteCustomer}=require('./controllers/userController');
 
-router.post('/POST/products',authMiddleware,addProduct);
-router.get('/GET/products',authMiddleware,getProducts);
-router.put('/PUT/products',authMiddleware,updateProduct);
-router.delete('/DELETE/products',authMiddleware,deleteProduct);
+router.post('/POST/customers',authMiddleware,addCustomers);
+router.get('/GET/customers',authMiddleware,getCustomers);
+router.put('/PUT/customers',authMiddleware,updateCustomer);
+router.delete('/DELETE/customers',authMiddleware,deleteCustomer);
 
 
 

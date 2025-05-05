@@ -1,45 +1,42 @@
- const products=[
+ const customers=[
     {
         'id':1,
-        "name":'Product 1',
-        "size":"M",
-        "price":100,
+        "name":'Customer 1',
+        "email":"customer1@mail.com",
+        "location":'Thiruvananthapuram',
     },
-    {
-        'id':2,
-        "name":'Product 2',
-        "size":"L",
-        "price":200,
+    {'id':2,
+        "name":'Customer 2',
+        "email":"customer2@mail.com",
+        "location":'Kollam',
     },
     {
         'id':3,
-        'name':'Product 3',
-        "size":"S",
-        "price":300,
+        "name":'Customer 3',
+        "email":"customer3@mail.com",
+        "location":'Pathanamthitta',
     },
     {
         'id':4,
-        'name':'Product 4',
-        "size":"XL",
-        "price":400,
+        "name":'Customer 4',
+        "email":"customer4@mail.com",
+        "location":'Alappuzha',
     },
     {
         'id':5,
-        'name':'Product 5',
-        "size":"XXL",
-        "price":500,
+        "name":'Customer 5',
+        "email":"customer6@mail.com",
+        "location":'Kottayam',
 
     }
  ];
 
  module.exports={
-    addProduct:(req,res)=>{
+    addCustomers:(req,res)=>{
 
         try{
-            const {search}=req.query.search
-
             console.log("api call:",req?.body);
-                products.push(req.body);
+                customers.push(req.body);
     
                 res.status(200).json({
                     success:true,
@@ -58,12 +55,18 @@
         }
 
     },
-    getProducts:(req, res)=>{
+    getCustomers:(req, res)=>{
         try{
-            const {search}=req.query;
+            const {search,page,limit}=req.query;
+            const startIndex=(page-1)*limit;
+            const endIndex=startIndex+parseInt(limit);
             if (search){
-                const filteredProducts=products.filter((product)=>product.name.toLowerCase().includes(search.toLowerCase()));
-                if(filteredProducts.length===0){
+                const filteredCustomers=customers.filter((customer)=>
+                customer.name.toLowerCase().includes(search.toLowerCase())||
+                customer.email.toLowerCase().includes(search.toLowerCase()) ||
+                customer.location.toLowerCase().includes(search.toLowerCase()));
+
+                if(filteredCustomers.length===0){
                     return res.status(200).json({
                         success:true,
                         statuscode:200,
@@ -71,24 +74,53 @@
                         data:[]
                     });
                 }
-                else if(filteredProducts.length>0){
+                else if(filteredCustomers.length>0){
+                    if (page,limit){
+                        const paginatedCustomers=filteredCustomers.slice(startIndex,endIndex);
                     return res.status(200).json({
                     success:true,
                     statuscode:200,
                     message:'Products fetched successfully',
-                    count: filteredProducts.length,
-                    data: filteredProducts
+                    totalcount: filteredCustomers.length,
+                    currentPage: parseInt(page),
+                    totalPages: Math.ceil(filteredCustomers.length / limit),
+                    data: paginatedCustomers
+                    
+                });
+            }
+            else {
+                return res.status(200).json({
+                    success:true,
+                    statuscode:200,
+                    message:'Products fetched successfully',
+                    totalcount: filteredCustomers.length,
+                    data: filteredCustomers
                 });
             }
             }
+            }
             else{ 
-                return res.status(200).json({
-                success:true,
-                statuscode:200,
-                message:'Products fetched successfully',
-                count: products.length,
-                data: products
-            });
+                if (page,limit){
+                    
+                    const resultCustomers=customers.slice(startIndex,endIndex);
+                    return res.status(200).json({
+                    success:true,
+                    statuscode:200,
+                    message:'Products fetched successfully',
+                    totalcount: customers.length,
+                    currentPage: parseInt(page),
+                    totalPages: Math.ceil(customers.length / limit),
+                    data: resultCustomers
+                });
+                }
+                else{
+                    return res.status(200).json({
+                        success:true,
+                        statuscode:200,
+                        message:'Products fetched successfully',
+                        data: customers
+                    });
+                }
         }
         }
         catch(e){
@@ -100,11 +132,11 @@
             });
         }
     },
-    updateProduct:(req,res)=>{
+    updateCustomer:(req,res)=>{
         try{
             console.log("reqBody:",req.body);
-            const productIndex=products.findIndex((product)=>product.id===req.body.id);
-            if(productIndex===-1){
+            const customerIndex=customers.findIndex((customer)=>customer.id===req.body.id);
+            if(customerIndex===-1){
                 return res.status(200).json({   
                     success:false,
                     statuscode:404,
@@ -112,12 +144,12 @@
                 })
             }
             else{
-                products[productIndex]=req.body.updatedData;
+                customers[customerIndex]=req.body.updatedData;
                 res.status(200).json({
                     success:true,
                     statuscode:200,
                     message:'Product updated successfully',
-                    data: products[productIndex]
+                    data: customers[customerIndex]
                 });
             };
         }
@@ -130,10 +162,10 @@
             });
         }
     },
-    deleteProduct:(req,res)=>{
+    deleteCustomer:(req,res)=>{
         try{
-            const productIndex=products.findIndex((product)=>product.id===req.body.id);
-            if(productIndex===-1){
+            const customerIndex=customers.findIndex((customer)=>customer.id===req.body.id);
+            if(customerIndex===-1){
                 return res.status(200).json({   
                     success:false,
                     statuscode:404,
@@ -141,7 +173,7 @@
                 })
             }
             else{
-                products.splice(productIndex,1);
+                customers.splice(customerIndex,1);
                 res.status(200).json({
                     success:true,
                     statuscode:200,
